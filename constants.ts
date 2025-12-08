@@ -13,6 +13,8 @@ interface Education {
   period: string;
 }
 
+
+
 interface Translation {
   PROJECTS: Project[];
   HELP_TEXT: string;
