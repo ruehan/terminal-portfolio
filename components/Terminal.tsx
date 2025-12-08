@@ -19,6 +19,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
   const [history, setHistory] = useState<TerminalLine[]>([]);
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isAiMode, setIsAiMode] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -29,6 +30,13 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
 
   // Keep focus on input
   const focusInput = () => inputRef.current?.focus();
+
+  // Refocus when processing ends or history changes
+  useEffect(() => {
+    if (!isProcessing) {
+      focusInput();
+    }
+  }, [isProcessing, history]);
 
   // Helper for dynamic text
   const LocalizedText = ({ selector }: { selector: (t: typeof TRANSLATIONS['en']) => string }) => {
@@ -58,9 +66,40 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
     ]);
   };
 
+  const handleAiQuery = async (query: string) => {
+    const loadingId = 'loading-' + Date.now();
+    setHistory(prev => [...prev, { id: loadingId, type: LineType.SYSTEM, content: <LocalizedText selector={t => t.UI.searching} />, timestamp: new Date() }]);
+
+    try {
+      const aiResponse = await generateAIResponse(query, language);
+      setHistory(prev => prev.filter(line => line.id !== loadingId));
+      addToHistory(aiResponse, LineType.AI);
+    } catch (e) {
+      soundManager.playBeep();
+      setHistory(prev => prev.filter(line => line.id !== loadingId));
+      addToHistory(<LocalizedText selector={t => t.UI.system_error} />, LineType.ERROR);
+    }
+  };
+
   const handleCommand = async (cmd: string) => {
     const trimmed = cmd.trim();
     if (!trimmed) return;
+
+    // In AI Mode, input is always AI query unless 'exit'
+    if (isAiMode) {
+      addToHistory(trimmed, LineType.INPUT);
+      setInput('');
+      
+      if (trimmed.toLowerCase() === 'exit') {
+        setIsAiMode(false);
+        addToHistory(<LocalizedText selector={t => t.UI.ai_mode_exit} />, LineType.SYSTEM);
+      } else {
+        setIsProcessing(true);
+        await handleAiQuery(trimmed);
+        setIsProcessing(false);
+      }
+      return;
+    }
 
     addToHistory(trimmed, LineType.INPUT);
     setInput('');
@@ -87,20 +126,24 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
     } else if (lowerCmd === 'contact') {
       addToHistory(<ContactWidget />, LineType.OUTPUT);
       onNavigate('CONTACT');
+    } else if (lowerCmd === 'ai') {
+      // Enter AI Mode
+      setIsAiMode(true);
+      addToHistory(<LocalizedText selector={t => t.UI.ai_mode_welcome} />, LineType.SYSTEM);
+    } else if (lowerCmd.startsWith('ai ')) {
+      // One-off AI query
+      const query = trimmed.slice(3);
+      await handleAiQuery(query);
     } else {
-      // 2. AI Fallback
-      const loadingId = 'loading-' + Date.now();
-      setHistory(prev => [...prev, { id: loadingId, type: LineType.SYSTEM, content: <LocalizedText selector={t => t.UI.searching} />, timestamp: new Date() }]);
-
-      try {
-        const aiResponse = await generateAIResponse(trimmed, language);
-        setHistory(prev => prev.filter(line => line.id !== loadingId));
-        addToHistory(aiResponse, LineType.AI);
-      } catch (e) {
-        soundManager.playBeep();
-        setHistory(prev => prev.filter(line => line.id !== loadingId));
-        addToHistory(<LocalizedText selector={t => t.UI.system_error} />, LineType.ERROR);
-      }
+      // Unknown Command
+      soundManager.playBeep();
+      addToHistory(
+        <span>
+          <LocalizedText selector={t => t.UI.command_not_found} />
+          {trimmed}
+        </span>, 
+        LineType.ERROR
+      );
     }
 
     setIsProcessing(false);
@@ -123,7 +166,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
         {history.map((line) => (
           <div key={line.id} className={`${line.type === LineType.AI ? 'text-zinc-200' : line.type === LineType.ERROR ? 'text-red-500' : 'text-zinc-400'}`}>
             <div className="flex flex-row items-start">
-               {line.type === LineType.INPUT && <span className="mr-2 text-white opacity-90 shrink-0">{t.UI.user_prefix}</span>}
+               {line.type === LineType.INPUT && <span className={`mr-2 opacity-90 shrink-0 ${isAiMode ? 'text-cyan-400' : 'text-white'}`}>{isAiMode ? t.UI.ai_prefix : t.UI.user_prefix}</span>}
                {line.type === LineType.AI && <span className="mr-2 text-zinc-300 opacity-90 shrink-0">{t.UI.ai_prefix}</span>}
                {line.type === LineType.SYSTEM && <span className="mr-2 text-zinc-500 opacity-70 shrink-0">{t.UI.system_name}</span>}
                
@@ -144,8 +187,8 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
       </div>
 
       {/* Input Area */}
-      <div className="flex items-center border-t border-zinc-800 pt-4 bg-black/40 backdrop-blur-sm">
-        <span className="text-white mr-2 shrink-0">{t.UI.user_prefix}</span>
+      <div className={`flex items-center border-t pt-4 bg-black/40 backdrop-blur-sm transition-colors duration-300 ${isAiMode ? 'border-cyan-900/50' : 'border-zinc-800'}`}>
+        <span className={`mr-2 shrink-0 transition-colors duration-300 ${isAiMode ? 'text-cyan-400' : 'text-white'}`}>{isAiMode ? t.UI.ai_prefix : t.UI.user_prefix}</span>
         <input
           ref={inputRef}
           type="text"
@@ -153,8 +196,8 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           autoFocus
-          className="flex-1 bg-transparent border-none outline-none text-zinc-300 placeholder-zinc-700"
-          placeholder={t.UI.input_placeholder}
+          className={`flex-1 bg-transparent border-none outline-none placeholder-zinc-700 transition-colors duration-300 ${isAiMode ? 'text-cyan-100' : 'text-zinc-300'}`}
+          placeholder={isAiMode ? t.UI.ai_input_placeholder : t.UI.input_placeholder}
           autoComplete="off"
           disabled={isProcessing}
         />

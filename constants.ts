@@ -44,9 +44,13 @@ interface Translation {
     system_error: string;
     searching: string;
     input_placeholder: string;
+    ai_input_placeholder: string;
     system_name: string;
     user_prefix: string;
     ai_prefix: string;
+    ai_mode_welcome: string;
+    ai_mode_exit: string;
+    command_not_found: string;
     status: {
         cpu: string;
         mem: string;
@@ -201,9 +205,13 @@ COMMUNICATION CHANNELS OPEN:
       system_error: "System Failure: Unable to reach AI Core.",
       searching: "Searching neural network...",
       input_placeholder: "Enter command...",
+      ai_input_placeholder: "Ask AI...",
       system_name: "[SYSTEM]",
       user_prefix: "guest@ruehan:~$",
       ai_prefix: "AI@assistant:~$",
+      ai_mode_welcome: "ENTERING AI INTERACTIVE MODE. Type 'exit' to return.",
+      ai_mode_exit: "EXITING AI MODE.",
+      command_not_found: "Command not found: ",
       status: {
         cpu: "CPU",
         mem: "MEM",
@@ -356,9 +364,13 @@ TIP: 하단의 추천 버튼을 클릭하거나 명령어를 직접 입력하세
       system_error: "시스템 오류: AI 코어에 접근할 수 없습니다.",
       searching: "신경망 검색 중...",
       input_placeholder: "명령어 입력...",
+      ai_input_placeholder: "AI에게 질문...",
       system_name: "[시스템]",
       user_prefix: "guest@ruehan:~$",
       ai_prefix: "AI@assistant:~$",
+      ai_mode_welcome: "AI 대화 모드로 진입합니다. 'exit'을 입력하여 종료하세요.",
+      ai_mode_exit: "AI 모드를 종료합니다.",
+      command_not_found: "명령어를 찾을 수 없습니다: ",
       status: {
         cpu: "CPU",
         mem: "메모리",

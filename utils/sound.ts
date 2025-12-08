@@ -3,15 +3,7 @@ class SoundManager {
   private isMuted: boolean = false;
 
   constructor() {
-    try {
-      // Initialize AudioContext lazily on user interaction usually, but we'll try here
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      if (AudioContext) {
-        this.context = new AudioContext();
-      }
-    } catch (e) {
-      console.error('Web Audio API not supported', e);
-    }
+    // Do not initialize in constructor to avoid "The AudioContext was not allowed to start" warning
   }
 
   private initContext() {
@@ -21,8 +13,9 @@ class SoundManager {
         this.context = new AudioContext();
       }
     }
+    // Resume context if suspended (browser autoplay policy)
     if (this.context && this.context.state === 'suspended') {
-      this.context.resume();
+      this.context.resume().catch(e => console.error("Audio resume failed", e));
     }
   }
 
@@ -36,14 +29,13 @@ class SoundManager {
   }
 
   public playKeystroke() {
-    if (this.isMuted || !this.context) return;
-    this.initContext();
+    if (this.isMuted) return;
+    this.initContext(); // Ensure context is ready on user interaction
+    if (!this.context) return;
 
     const osc = this.context.createOscillator();
     const gain = this.context.createGain();
 
-    // Mechanical switch sound simulation
-    // Short burst of noise + sine wave
     osc.type = 'square';
     osc.frequency.setValueAtTime(600, this.context.currentTime);
     osc.frequency.exponentialRampToValueAtTime(100, this.context.currentTime + 0.05);
@@ -59,8 +51,9 @@ class SoundManager {
   }
 
   public playBeep() {
-    if (this.isMuted || !this.context) return;
+    if (this.isMuted) return;
     this.initContext();
+    if (!this.context) return;
 
     const osc = this.context.createOscillator();
     const gain = this.context.createGain();
@@ -80,8 +73,10 @@ class SoundManager {
   }
 
   public playSuccess() {
-    if (this.isMuted || !this.context) return;
-    this.initContext();
+    if (this.isMuted) return;
+    // Note: This might still be blocked if called on page load without interaction
+    this.initContext(); 
+    if (!this.context) return;
 
     const osc = this.context.createOscillator();
     const gain = this.context.createGain();

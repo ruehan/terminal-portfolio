@@ -47,6 +47,6 @@ Rules:
     return response.text || (language === 'ko' ? "데이터 수신 실패." : "Data retrieval failed.");
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return language === 'ko' ? "오류: AI 코어 연결 실패." : "Error: Connection to AI Core failed.";
+    throw error;
   }
 };
