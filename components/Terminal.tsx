@@ -5,6 +5,8 @@ import { generateAIResponse } from '../services/geminiService';
 import { ProjectListWidget, ProfileWidget, ContactWidget } from './GuiWidgets';
 import { useLanguage } from '../contexts/LanguageContext';
 
+import { soundManager } from '../utils/sound';
+
 interface TerminalProps {
   onNavigate: (target: CameraTarget) => void;
   onSelectProject: (id: string) => void;
@@ -36,6 +38,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
 
   // Initial Welcome Message
   useEffect(() => {
+    soundManager.playSuccess();
     const welcomeId = Date.now().toString();
     setHistory([
       {
@@ -72,6 +75,9 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
     } else if (lowerCmd === 'clear' || lowerCmd === 'cls') {
       setHistory([]);
       onNavigate('IDLE');
+    } else if (lowerCmd === 'mute') {
+      const isMuted = soundManager.toggleMute();
+      addToHistory(isMuted ? "Audio Output: MUTED" : "Audio Output: ENABLED", LineType.SYSTEM);
     } else if (lowerCmd === 'about' || lowerCmd === 'whoami') {
       addToHistory(<ProfileWidget onOpenProfile={onOpenProfile} />, LineType.OUTPUT);
       onNavigate('ABOUT');
@@ -91,6 +97,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
         setHistory(prev => prev.filter(line => line.id !== loadingId));
         addToHistory(aiResponse, LineType.AI);
       } catch (e) {
+        soundManager.playBeep();
         setHistory(prev => prev.filter(line => line.id !== loadingId));
         addToHistory(<LocalizedText selector={t => t.UI.system_error} />, LineType.ERROR);
       }
@@ -100,6 +107,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    soundManager.playKeystroke();
     if (e.key === 'Enter' && !isProcessing) {
       handleCommand(input);
     }
