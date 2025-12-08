@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TerminalLine, LineType, CameraTarget } from '../types';
 import { TRANSLATIONS } from '../constants';
 import { generateAIResponse } from '../services/geminiService';
-import { ProjectListWidget, ProfileWidget, ContactWidget, ThemeSelector } from './GuiWidgets';
+import { ProjectListWidget, ProfileWidget, ContactWidget, ThemeSelector, MusicControlWidget } from './GuiWidgets';
 import { useLanguage } from '../contexts/LanguageContext';
 
 import { soundManager } from '../utils/sound';
@@ -154,17 +154,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
       addToHistory("Launching Snake Game...", LineType.SYSTEM);
     } else if (lowerCmd.startsWith('music')) {
       // Music Command
-      const args = lowerCmd.split(' ');
-      const action = args[1];
-      if (action === 'play') {
-        soundManager.playBGM();
-        addToHistory("Background Music: PLAYING (Lo-fi Ambient)", LineType.SYSTEM);
-      } else if (action === 'stop') {
-        soundManager.stopBGM();
-        addToHistory("Background Music: STOPPED", LineType.SYSTEM);
-      } else {
-        addToHistory("Usage: music [play|stop]", LineType.SYSTEM);
-      }
+      addToHistory(<MusicControlWidget />, LineType.SYSTEM);
     } else if (lowerCmd === 'tip' || lowerCmd === 'hint') {
       // Tip Command
       const tipIndex = Math.floor(Math.random() * t.UI.tips.length);

@@ -82,6 +82,13 @@ interface Translation {
         usage: string;
         themes: Record<string, string>;
     };
+    music_control: {
+        playing: string;
+        stopped: string;
+        play: string;
+        stop: string;
+        usage: string;
+    };
   };
 }
 
@@ -271,6 +278,13 @@ COMMUNICATION CHANNELS OPEN:
             white: "White",
             classic: "Classic"
         }
+      },
+      music_control: {
+        playing: "Background Music: PLAYING (Lo-fi Ambient)",
+        stopped: "Background Music: STOPPED",
+        play: "PLAY",
+        stop: "STOP",
+        usage: "Usage: Click above or type 'music [play|stop]'"
       }
     }
   },
@@ -459,6 +473,13 @@ TIP: 하단의 추천 버튼을 클릭하거나 명령어를 직접 입력하세
             white: "화이트",
             classic: "기본 (Classic)"
         }
+      },
+      music_control: {
+        playing: "배경 음악: 재생 중 (Lo-fi Ambient)",
+        stopped: "배경 음악: 정지됨",
+        play: "재생",
+        stop: "정지",
+        usage: "사용법: 위 버튼을 클릭하거나 'music [play|stop]'을 입력하세요."
       }
     }
   }

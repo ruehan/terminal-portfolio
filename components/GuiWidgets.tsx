@@ -201,3 +201,60 @@ export const ThemeSelector: React.FC = () => {
     </div>
   );
 };
+
+export const MusicControlWidget: React.FC = () => {
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
+  const [isPlaying, setIsPlaying] = React.useState(false);
+
+  // Sync state with soundManager (simple polling or event listener would be better, but basic toggle works for now)
+  // For this simple implementation, we'll just handle the click. 
+  // Ideally, soundManager should emit events, but we'll keep it simple.
+
+  const handlePlay = () => {
+    import('../utils/sound').then(({ soundManager }) => {
+        soundManager.playBGM();
+        setIsPlaying(true);
+    });
+  };
+
+  const handleStop = () => {
+    import('../utils/sound').then(({ soundManager }) => {
+        soundManager.stopBGM();
+        setIsPlaying(false);
+    });
+  };
+
+  return (
+    <div className="mt-2 mb-2">
+      <div className="mb-2 font-bold text-theme-highlight">
+        {isPlaying ? t.UI.music_control.playing : t.UI.music_control.stopped}
+      </div>
+      <div className="flex gap-4">
+        <button
+          onClick={handlePlay}
+          className={`px-4 py-1 border rounded transition-all ${
+            isPlaying 
+              ? 'border-theme text-theme-highlight bg-theme-bg/50 font-bold' 
+              : 'border-zinc-700 text-zinc-500 hover:border-theme hover:text-theme-primary'
+          }`}
+        >
+          ▶ {t.UI.music_control.play}
+        </button>
+        <button
+          onClick={handleStop}
+          className={`px-4 py-1 border rounded transition-all ${
+            !isPlaying 
+              ? 'border-zinc-700 text-zinc-500' 
+              : 'border-zinc-700 text-zinc-500 hover:border-red-500 hover:text-red-500'
+          }`}
+        >
+          ■ {t.UI.music_control.stop}
+        </button>
+      </div>
+      <div className="mt-2 text-xs text-theme-dim opacity-70">
+        {t.UI.music_control.usage}
+      </div>
+    </div>
+  );
+};
