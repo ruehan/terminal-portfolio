@@ -94,6 +94,35 @@ class SoundManager {
     osc.start();
     osc.stop(this.context.currentTime + 0.5);
   }
+  public playUnlock() {
+    if (this.isMuted) return;
+    this.initialize();
+    if (!this.context) return;
+
+    const osc = this.context.createOscillator();
+    const gain = this.context.createGain();
+
+    // Zelda-ish secret sound
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(784, this.context.currentTime); // G5
+    osc.frequency.setValueAtTime(740, this.context.currentTime + 0.1); // F#5
+    osc.frequency.setValueAtTime(622, this.context.currentTime + 0.2); // D#5
+    osc.frequency.setValueAtTime(440, this.context.currentTime + 0.3); // A4
+    osc.frequency.setValueAtTime(415, this.context.currentTime + 0.4); // G#4
+    osc.frequency.setValueAtTime(659, this.context.currentTime + 0.5); // E5
+    osc.frequency.setValueAtTime(830, this.context.currentTime + 0.6); // G#5
+    osc.frequency.setValueAtTime(1046, this.context.currentTime + 0.7); // C6
+
+    gain.gain.setValueAtTime(0.1, this.context.currentTime);
+    gain.gain.linearRampToValueAtTime(0.1, this.context.currentTime + 0.7);
+    gain.gain.linearRampToValueAtTime(0.001, this.context.currentTime + 1.2);
+
+    osc.connect(gain);
+    gain.connect(this.context.destination);
+
+    osc.start();
+    osc.stop(this.context.currentTime + 1.2);
+  }
 }
 
 export const soundManager = new SoundManager();

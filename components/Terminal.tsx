@@ -11,9 +11,10 @@ interface TerminalProps {
   onNavigate: (target: CameraTarget) => void;
   onSelectProject: (id: string) => void;
   onOpenProfile: () => void;
+  onToggleMatrix: () => void;
 }
 
-export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject, onOpenProfile }) => {
+export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject, onOpenProfile, onToggleMatrix }) => {
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
   const [history, setHistory] = useState<TerminalLine[]>([]);
@@ -22,6 +23,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
   const [isAiMode, setIsAiMode] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const konamiRef = useRef<string[]>([]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -134,6 +136,14 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
       // One-off AI query
       const query = trimmed.slice(3);
       await handleAiQuery(query);
+    } else if (lowerCmd.startsWith('sudo')) {
+      // Easter Egg: Sudo
+      soundManager.playBeep();
+      addToHistory("Permission denied: You are not the owner of this portfolio.", LineType.ERROR);
+    } else if (lowerCmd === 'matrix') {
+      // Easter Egg: Matrix
+      onToggleMatrix();
+      addToHistory("Toggling Matrix visual interface...", LineType.SYSTEM);
     } else {
       // Unknown Command
       soundManager.playBeep();
@@ -151,6 +161,19 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     soundManager.playKeystroke();
+
+    // Konami Code Logic
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    konamiRef.current.push(e.key);
+    if (konamiRef.current.length > konamiCode.length) {
+      konamiRef.current.shift();
+    }
+    if (JSON.stringify(konamiRef.current) === JSON.stringify(konamiCode)) {
+      soundManager.playUnlock();
+      addToHistory("CHEAT CODE ACTIVATED: GOD MODE ENABLED (Just kidding, but nice memory!)", LineType.SYSTEM);
+      konamiRef.current = [];
+    }
+
     if (e.key === 'Enter' && !isProcessing) {
       handleCommand(input);
     }

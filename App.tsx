@@ -10,9 +10,12 @@ import { useLanguage } from './contexts/LanguageContext';
 
 import { soundManager } from './utils/sound';
 
+import { MatrixRain } from './components/MatrixRain';
+
 function App() {
   const [hasStarted, setHasStarted] = useState(false);
   const [booted, setBooted] = useState(false);
+  const [showMatrix, setShowMatrix] = useState(false);
   const [cameraTarget, setCameraTarget] = useState<CameraTarget>('IDLE');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -46,6 +49,9 @@ function App() {
 
       {/* Layer 1: 3D Background */}
       <Scene cameraTarget={cameraTarget} />
+
+      {/* Layer 1.5: Matrix Rain */}
+      {showMatrix && <MatrixRain />}
 
       {/* Layer 2: UI Overlay */}
       <div className="absolute inset-0 z-10 flex items-center justify-center p-4">
@@ -83,6 +89,7 @@ function App() {
             onNavigate={setCameraTarget} 
             onSelectProject={setSelectedProjectId}
             onOpenProfile={() => setShowProfileModal(true)}
+            onToggleMatrix={() => setShowMatrix(prev => !prev)}
           />
           
           {/* System Status Footer */}
