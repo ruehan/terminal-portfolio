@@ -152,6 +152,19 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
       // Mini Game: Snake
       onToggleGame();
       addToHistory("Launching Snake Game...", LineType.SYSTEM);
+    } else if (lowerCmd.startsWith('music')) {
+      // Music Command
+      const args = lowerCmd.split(' ');
+      const action = args[1];
+      if (action === 'play') {
+        soundManager.playBGM();
+        addToHistory("Background Music: PLAYING (Lo-fi Ambient)", LineType.SYSTEM);
+      } else if (action === 'stop') {
+        soundManager.stopBGM();
+        addToHistory("Background Music: STOPPED", LineType.SYSTEM);
+      } else {
+        addToHistory("Usage: music [play|stop]", LineType.SYSTEM);
+      }
     } else if (lowerCmd === 'tip' || lowerCmd === 'hint') {
       // Tip Command
       const tipIndex = Math.floor(Math.random() * t.UI.tips.length);
@@ -312,7 +325,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
 
       {/* Quick Suggestions */}
       <div className="flex flex-wrap gap-2 mt-4">
-        {[t.UI.commands.help, t.UI.commands.projects, t.UI.commands.about, t.UI.commands.contact, t.UI.commands.tip, t.UI.commands.game, t.UI.commands.theme].map(cmd => (
+        {[t.UI.commands.help, t.UI.commands.projects, t.UI.commands.about, t.UI.commands.contact, t.UI.commands.tip, t.UI.commands.game, t.UI.commands.music, t.UI.commands.theme].map(cmd => (
           <button
             key={cmd}
             onClick={(e) => { e.stopPropagation(); handleCommand(cmd); }}

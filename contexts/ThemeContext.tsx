@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type Theme = 'cyberpunk' | 'retro' | 'matrix' | 'dracula' | 'white';
+export type Theme = 'cyberpunk' | 'retro' | 'matrix' | 'dracula' | 'white' | 'classic';
 
 interface ThemeContextType {
   theme: Theme;
@@ -15,7 +15,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return (localStorage.getItem('terminal_theme') as Theme) || 'cyberpunk';
   });
 
-  const availableThemes: Theme[] = ['cyberpunk', 'retro', 'matrix', 'dracula', 'white'];
+  const availableThemes: Theme[] = ['cyberpunk', 'retro', 'matrix', 'dracula', 'white', 'classic'];
 
   useEffect(() => {
     localStorage.setItem('terminal_theme', theme);

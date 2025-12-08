@@ -1,9 +1,13 @@
 class SoundManager {
   private context: AudioContext | null = null;
+  private masterGain: GainNode | null = null;
   private isMuted: boolean = false;
+  private bgmOscillators: OscillatorNode[] = [];
+  private bgmGain: GainNode | null = null;
+  private isBgmPlaying: boolean = false;
 
   constructor() {
-    // Do not initialize in constructor to avoid "The AudioContext was not allowed to start" warning
+    // Lazy init
   }
 
   public initialize() {
@@ -11,9 +15,14 @@ class SoundManager {
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       if (AudioContext) {
         this.context = new AudioContext();
+        this.masterGain = this.context.createGain();
+        this.masterGain.gain.value = 0.3; // Master volume
+        this.masterGain.connect(this.context.destination);
       }
     }
-    // Resume context if suspended (browser autoplay policy)
+  }
+
+  public resumeContext() {
     if (this.context && this.context.state === 'suspended') {
       this.context.resume().catch(e => console.error("Audio resume failed", e));
     }
@@ -21,6 +30,9 @@ class SoundManager {
 
   public toggleMute() {
     this.isMuted = !this.isMuted;
+    if (this.masterGain) {
+      this.masterGain.gain.value = this.isMuted ? 0 : 0.3;
+    }
     return this.isMuted;
   }
 
@@ -30,8 +42,9 @@ class SoundManager {
 
   public playKeystroke() {
     if (this.isMuted) return;
-    this.initialize(); // Ensure context is ready on user interaction
-    if (!this.context) return;
+    this.initialize();
+    this.resumeContext();
+    if (!this.context || !this.masterGain) return;
 
     const osc = this.context.createOscillator();
     const gain = this.context.createGain();
@@ -44,7 +57,7 @@ class SoundManager {
     gain.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + 0.05);
 
     osc.connect(gain);
-    gain.connect(this.context.destination);
+    gain.connect(this.masterGain);
 
     osc.start();
     osc.stop(this.context.currentTime + 0.05);
@@ -53,7 +66,8 @@ class SoundManager {
   public playBeep() {
     if (this.isMuted) return;
     this.initialize();
-    if (!this.context) return;
+    this.resumeContext();
+    if (!this.context || !this.masterGain) return;
 
     const osc = this.context.createOscillator();
     const gain = this.context.createGain();
@@ -66,7 +80,7 @@ class SoundManager {
     gain.gain.linearRampToValueAtTime(0.001, this.context.currentTime + 0.3);
 
     osc.connect(gain);
-    gain.connect(this.context.destination);
+    gain.connect(this.masterGain);
 
     osc.start();
     osc.stop(this.context.currentTime + 0.3);
@@ -74,9 +88,9 @@ class SoundManager {
 
   public playSuccess() {
     if (this.isMuted) return;
-    // Note: This might still be blocked if called on page load without interaction
-    this.initialize(); 
-    if (!this.context) return;
+    this.initialize();
+    this.resumeContext();
+    if (!this.context || !this.masterGain) return;
 
     const osc = this.context.createOscillator();
     const gain = this.context.createGain();
@@ -89,39 +103,93 @@ class SoundManager {
     gain.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + 0.5);
 
     osc.connect(gain);
-    gain.connect(this.context.destination);
+    gain.connect(this.masterGain);
 
     osc.start();
     osc.stop(this.context.currentTime + 0.5);
   }
+
   public playUnlock() {
     if (this.isMuted) return;
     this.initialize();
-    if (!this.context) return;
+    this.resumeContext();
+    if (!this.context || !this.masterGain) return;
 
     const osc = this.context.createOscillator();
     const gain = this.context.createGain();
 
-    // Zelda-ish secret sound
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(784, this.context.currentTime); // G5
-    osc.frequency.setValueAtTime(740, this.context.currentTime + 0.1); // F#5
-    osc.frequency.setValueAtTime(622, this.context.currentTime + 0.2); // D#5
-    osc.frequency.setValueAtTime(440, this.context.currentTime + 0.3); // A4
-    osc.frequency.setValueAtTime(415, this.context.currentTime + 0.4); // G#4
-    osc.frequency.setValueAtTime(659, this.context.currentTime + 0.5); // E5
-    osc.frequency.setValueAtTime(830, this.context.currentTime + 0.6); // G#5
-    osc.frequency.setValueAtTime(1046, this.context.currentTime + 0.7); // C6
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(440, this.context.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, this.context.currentTime + 0.1);
+    osc.frequency.exponentialRampToValueAtTime(1760, this.context.currentTime + 0.2);
 
     gain.gain.setValueAtTime(0.1, this.context.currentTime);
-    gain.gain.linearRampToValueAtTime(0.1, this.context.currentTime + 0.7);
-    gain.gain.linearRampToValueAtTime(0.001, this.context.currentTime + 1.2);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.5);
 
     osc.connect(gain);
-    gain.connect(this.context.destination);
+    gain.connect(this.masterGain);
 
-    osc.start();
-    osc.stop(this.context.currentTime + 1.2);
+    osc.start(this.context.currentTime);
+    osc.stop(this.context.currentTime + 0.5);
+  }
+
+  public playBGM() {
+    if (this.isMuted || this.isBgmPlaying) return;
+    this.initialize();
+    this.resumeContext();
+    if (!this.context || !this.masterGain) return;
+
+    this.isBgmPlaying = true;
+    this.bgmGain = this.context.createGain();
+    this.bgmGain.gain.setValueAtTime(0, this.context.currentTime);
+    this.bgmGain.gain.linearRampToValueAtTime(0.05, this.context.currentTime + 2); // Fade in
+    this.bgmGain.connect(this.masterGain);
+
+    // Create a drone chord (Cmaj7/9)
+    const freqs = [130.81, 196.00, 246.94, 293.66]; // C3, G3, B3, D4
+    
+    freqs.forEach(freq => {
+        if (!this.context) return;
+        const osc = this.context.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        
+        // Add subtle detuning for richness
+        const lfo = this.context.createOscillator();
+        lfo.type = 'sine';
+        lfo.frequency.value = 0.1 + Math.random() * 0.1; // Slow LFO
+        const lfoGain = this.context.createGain();
+        lfoGain.gain.value = 2; // Detune amount
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+        lfo.start();
+
+        osc.connect(this.bgmGain!);
+        osc.start();
+        this.bgmOscillators.push(osc);
+        this.bgmOscillators.push(lfo); // Keep track to stop later
+    });
+  }
+
+  public stopBGM() {
+    if (!this.context || !this.isBgmPlaying || !this.bgmGain) return;
+    
+    const now = this.context.currentTime;
+    this.bgmGain.gain.cancelScheduledValues(now);
+    this.bgmGain.gain.setValueAtTime(this.bgmGain.gain.value, now);
+    this.bgmGain.gain.linearRampToValueAtTime(0, now + 2); // Fade out
+
+    setTimeout(() => {
+        this.bgmOscillators.forEach(osc => {
+            try { osc.stop(); } catch (e) {}
+        });
+        this.bgmOscillators = [];
+        this.isBgmPlaying = false;
+        if (this.bgmGain) {
+            this.bgmGain.disconnect();
+            this.bgmGain = null;
+        }
+    }, 2000);
   }
 }
 
