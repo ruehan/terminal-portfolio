@@ -8,12 +8,31 @@ import { ProfileDetailModal } from './components/ProfileDetailModal';
 import { CameraTarget } from './types';
 import { useLanguage } from './contexts/LanguageContext';
 
+import { soundManager } from './utils/sound';
+
 function App() {
+  const [hasStarted, setHasStarted] = useState(false);
   const [booted, setBooted] = useState(false);
   const [cameraTarget, setCameraTarget] = useState<CameraTarget>('IDLE');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const { language, toggleLanguage } = useLanguage();
+
+  if (!hasStarted) {
+    return (
+      <div 
+        className="w-screen h-screen bg-black flex items-center justify-center cursor-pointer"
+        onClick={() => {
+          soundManager.initialize();
+          setHasStarted(true);
+        }}
+      >
+        <div className="text-zinc-500 font-mono animate-pulse tracking-widest">
+          [ CLICK TO INITIALIZE SYSTEM ]
+        </div>
+      </div>
+    );
+  }
 
   if (!booted) {
     return <BootSequence onComplete={() => setBooted(true)} />;

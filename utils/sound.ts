@@ -6,7 +6,7 @@ class SoundManager {
     // Do not initialize in constructor to avoid "The AudioContext was not allowed to start" warning
   }
 
-  private initContext() {
+  public initialize() {
     if (!this.context) {
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       if (AudioContext) {
@@ -30,7 +30,7 @@ class SoundManager {
 
   public playKeystroke() {
     if (this.isMuted) return;
-    this.initContext(); // Ensure context is ready on user interaction
+    this.initialize(); // Ensure context is ready on user interaction
     if (!this.context) return;
 
     const osc = this.context.createOscillator();
@@ -52,7 +52,7 @@ class SoundManager {
 
   public playBeep() {
     if (this.isMuted) return;
-    this.initContext();
+    this.initialize();
     if (!this.context) return;
 
     const osc = this.context.createOscillator();
@@ -75,7 +75,7 @@ class SoundManager {
   public playSuccess() {
     if (this.isMuted) return;
     // Note: This might still be blocked if called on page load without interaction
-    this.initContext(); 
+    this.initialize(); 
     if (!this.context) return;
 
     const osc = this.context.createOscillator();
