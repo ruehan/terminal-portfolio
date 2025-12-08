@@ -185,9 +185,11 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
     setIsProcessing(false);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    soundManager.playKeystroke();
+    // History & Autocomplete State
+    const [commandHistory, setCommandHistory] = useState<string[]>([]);
+    const [historyIndex, setHistoryIndex] = useState(-1);
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
     // Konami Code Logic
     const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
     konamiRef.current.push(e.key);
@@ -201,7 +203,40 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
     }
 
     if (e.key === 'Enter' && !isProcessing) {
+      soundManager.playKeystroke();
+      if (input.trim()) {
+        setCommandHistory(prev => [...prev, input]);
+        setHistoryIndex(-1);
+      }
       handleCommand(input);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (commandHistory.length > 0) {
+        const newIndex = historyIndex === -1 ? commandHistory.length - 1 : Math.max(0, historyIndex - 1);
+        setHistoryIndex(newIndex);
+        setInput(commandHistory[newIndex]);
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex !== -1) {
+        const newIndex = historyIndex + 1;
+        if (newIndex < commandHistory.length) {
+          setHistoryIndex(newIndex);
+          setInput(commandHistory[newIndex]);
+        } else {
+          setHistoryIndex(-1);
+          setInput('');
+        }
+      }
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      const cmds = Object.values(t.UI.commands);
+      const match = cmds.find(c => c.startsWith(input.toLowerCase()));
+      if (match) {
+        setInput(match);
+      }
+    } else {
+        soundManager.playKeystroke();
     }
   };
 
