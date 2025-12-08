@@ -11,11 +11,13 @@ import { useLanguage } from './contexts/LanguageContext';
 import { soundManager } from './utils/sound';
 
 import { MatrixRain } from './components/MatrixRain';
+import { SnakeGame } from './components/SnakeGame';
 
 function App() {
   const [hasStarted, setHasStarted] = useState(false);
   const [booted, setBooted] = useState(false);
   const [showMatrix, setShowMatrix] = useState(false);
+  const [showGame, setShowGame] = useState(false);
   const [cameraTarget, setCameraTarget] = useState<CameraTarget>('IDLE');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -50,8 +52,9 @@ function App() {
       {/* Layer 1: 3D Background */}
       <Scene cameraTarget={cameraTarget} />
 
-      {/* Layer 1.5: Matrix Rain */}
+      {/* Layer 1.5: Visual Effects */}
       {showMatrix && <MatrixRain />}
+      {showGame && <SnakeGame onClose={() => setShowGame(false)} />}
 
       {/* Layer 2: UI Overlay */}
       <div className="absolute inset-0 z-10 flex items-center justify-center p-4">
@@ -90,6 +93,7 @@ function App() {
             onSelectProject={setSelectedProjectId}
             onOpenProfile={() => setShowProfileModal(true)}
             onToggleMatrix={() => setShowMatrix(prev => !prev)}
+            onToggleGame={() => setShowGame(prev => !prev)}
           />
           
           {/* System Status Footer */}

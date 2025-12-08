@@ -12,9 +12,10 @@ interface TerminalProps {
   onSelectProject: (id: string) => void;
   onOpenProfile: () => void;
   onToggleMatrix: () => void;
+  onToggleGame: () => void;
 }
 
-export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject, onOpenProfile, onToggleMatrix }) => {
+export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject, onOpenProfile, onToggleMatrix, onToggleGame }) => {
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
   const [history, setHistory] = useState<TerminalLine[]>([]);
@@ -144,6 +145,10 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
       // Easter Egg: Matrix
       onToggleMatrix();
       addToHistory(<LocalizedText selector={t => t.UI.matrix_message} />, LineType.SYSTEM);
+    } else if (lowerCmd === 'game' || lowerCmd === 'snake') {
+      // Mini Game: Snake
+      onToggleGame();
+      addToHistory("Launching Snake Game...", LineType.SYSTEM);
     } else if (lowerCmd === 'tip' || lowerCmd === 'hint') {
       // Tip Command
       const tipIndex = Math.floor(Math.random() * t.UI.tips.length);
@@ -232,7 +237,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
 
       {/* Quick Suggestions */}
       <div className="flex flex-wrap gap-2 mt-4">
-        {[t.UI.commands.help, t.UI.commands.projects, t.UI.commands.about, t.UI.commands.contact, t.UI.commands.tip].map(cmd => (
+        {[t.UI.commands.help, t.UI.commands.projects, t.UI.commands.about, t.UI.commands.contact, t.UI.commands.tip, t.UI.commands.game].map(cmd => (
           <button
             key={cmd}
             onClick={(e) => { e.stopPropagation(); handleCommand(cmd); }}
