@@ -4,7 +4,8 @@
 
 :root {
   /* Default (Cyberpunk) */
-  --color-bg: #000000;
+  --color-bg-rgb: 0, 0, 0;
+  --color-bg: rgb(var(--color-bg-rgb));
   --color-text: #22c55e; /* green-500 */
   --color-text-dim: #15803d; /* green-700 */
   --color-border: #22c55e;
@@ -13,7 +14,8 @@
 }
 
 [data-theme='retro'] {
-  --color-bg: #1a0f00;
+  --color-bg-rgb: 26, 15, 0;
+  --color-bg: rgb(var(--color-bg-rgb));
   --color-text: #f59e0b; /* amber-500 */
   --color-text-dim: #b45309; /* amber-700 */
   --color-border: #f59e0b;
@@ -21,7 +23,8 @@
 }
 
 [data-theme='matrix'] {
-  --color-bg: #000500;
+  --color-bg-rgb: 0, 5, 0;
+  --color-bg: rgb(var(--color-bg-rgb));
   --color-text: #00ff41; /* matrix green */
   --color-text-dim: #008f11;
   --color-border: #00ff41;
@@ -29,7 +32,8 @@
 }
 
 [data-theme='dracula'] {
-  --color-bg: #282a36;
+  --color-bg-rgb: 40, 42, 54;
+  --color-bg: rgb(var(--color-bg-rgb));
   --color-text: #ff79c6; /* pink */
   --color-text-dim: #bd93f9; /* purple */
   --color-border: #ff79c6;
@@ -37,7 +41,8 @@
 }
 
 [data-theme='white'] {
-  --color-bg: #ffffff;
+  --color-bg-rgb: 255, 255, 255;
+  --color-bg: rgb(var(--color-bg-rgb));
   --color-text: #171717; /* neutral-900 */
   --color-text-dim: #525252; /* neutral-600 */
   --color-border: #171717;
@@ -71,5 +76,8 @@ body {
   }
   .bg-theme-bg {
     background-color: var(--color-bg);
+  }
+  .bg-theme-overlay {
+    background-color: rgba(var(--color-bg-rgb), 0.8);
   }
 }

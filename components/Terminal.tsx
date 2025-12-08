@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TerminalLine, LineType, CameraTarget } from '../types';
 import { TRANSLATIONS } from '../constants';
 import { generateAIResponse } from '../services/geminiService';
-import { ProjectListWidget, ProfileWidget, ContactWidget } from './GuiWidgets';
+import { ProjectListWidget, ProfileWidget, ContactWidget, ThemeSelector } from './GuiWidgets';
 import { useLanguage } from '../contexts/LanguageContext';
 
 import { soundManager } from '../utils/sound';
@@ -160,20 +160,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
       // Theme Command
       const args = lowerCmd.split(' ');
       if (args.length === 1 || args[1] === 'list') {
-        addToHistory(
-          <div>
-            AVAILABLE THEMES:
-            <br />
-            {availableThemes.map(th => (
-              <div key={th} className={th === theme ? 'text-green-400 font-bold' : ''}>
-                {th === theme ? '* ' : '  '}{th}
-              </div>
-            ))}
-            <br />
-            Usage: theme [name]
-          </div>,
-          LineType.SYSTEM
-        );
+        addToHistory(<ThemeSelector />, LineType.SYSTEM);
       } else {
         const targetTheme = args[1] as Theme;
         if (availableThemes.includes(targetTheme)) {

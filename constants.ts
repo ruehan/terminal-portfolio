@@ -75,7 +75,12 @@ interface Translation {
         features: string;
         close: string;
         launch: string;
-    }
+    };
+    theme_selection: {
+        title: string;
+        usage: string;
+        themes: Record<string, string>;
+    };
   };
 }
 
@@ -251,6 +256,17 @@ COMMUNICATION CHANNELS OPEN:
         features: "KEY FEATURES",
         close: "CLOSE WINDOW",
         launch: "LAUNCH SYSTEM"
+      },
+      theme_selection: {
+        title: "AVAILABLE THEMES:",
+        usage: "Usage: Click above or type 'theme [name]'",
+        themes: {
+            cyberpunk: "Cyberpunk",
+            retro: "Retro",
+            matrix: "Matrix",
+            dracula: "Dracula",
+            white: "White"
+        }
       }
     }
   },
@@ -425,6 +441,17 @@ TIP: 하단의 추천 버튼을 클릭하거나 명령어를 직접 입력하세
         features: "주요 기능",
         close: "창 닫기",
         launch: "시스템 실행"
+      },
+      theme_selection: {
+        title: "사용 가능한 테마:",
+        usage: "사용법: 위 버튼을 클릭하거나 'theme [이름]'을 입력하세요.",
+        themes: {
+            cyberpunk: "사이버펑크",
+            retro: "레트로",
+            matrix: "매트릭스",
+            dracula: "드라큘라",
+            white: "화이트"
+        }
       }
     }
   }

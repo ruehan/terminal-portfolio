@@ -1,6 +1,7 @@
 import React from 'react';
 import { TRANSLATIONS } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 // --- Shared Styles ---
 const CARD_BASE = "bg-zinc-900/50 border border-zinc-700 backdrop-blur-md rounded p-4 mb-2 transition-all duration-300 hover:bg-zinc-800/80 hover:border-zinc-400 group relative overflow-hidden cursor-pointer";
@@ -166,6 +167,37 @@ export const ContactWidget: React.FC = () => {
           <div className="text-xs text-zinc-500 group-hover:text-zinc-300 truncate max-w-full">{c.value}</div>
         </a>
       ))}
+    </div>
+  );
+};
+
+export const ThemeSelector: React.FC = () => {
+  const { language } = useLanguage();
+  const { theme, setTheme, availableThemes } = useTheme();
+  const t = TRANSLATIONS[language];
+
+  return (
+    <div className="mt-2 mb-2">
+      <div className="mb-2 font-bold text-theme-highlight">{t.UI.theme_selection.title}</div>
+      <div className="grid grid-cols-2 gap-2 max-w-xs">
+        {availableThemes.map(th => (
+          <button
+            key={th}
+            onClick={() => setTheme(th)}
+            className={`text-left px-3 py-1 border rounded transition-all ${
+              th === theme 
+                ? 'border-theme text-theme-highlight bg-theme-bg/50 font-bold' 
+                : 'border-zinc-700 text-zinc-500 hover:border-theme hover:text-theme-primary'
+            }`}
+          >
+            {th === theme ? '> ' : '  '}
+            {t.UI.theme_selection.themes[th] || th}
+          </button>
+        ))}
+      </div>
+      <div className="mt-2 text-xs text-theme-dim opacity-70">
+        {t.UI.theme_selection.usage}
+      </div>
     </div>
   );
 };
