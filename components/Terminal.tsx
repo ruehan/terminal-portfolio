@@ -139,11 +139,15 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
     } else if (lowerCmd.startsWith('sudo')) {
       // Easter Egg: Sudo
       soundManager.playBeep();
-      addToHistory("Permission denied: You are not the owner of this portfolio.", LineType.ERROR);
+      addToHistory(<LocalizedText selector={t => t.UI.sudo_message} />, LineType.ERROR);
     } else if (lowerCmd === 'matrix') {
       // Easter Egg: Matrix
       onToggleMatrix();
-      addToHistory("Toggling Matrix visual interface...", LineType.SYSTEM);
+      addToHistory(<LocalizedText selector={t => t.UI.matrix_message} />, LineType.SYSTEM);
+    } else if (lowerCmd === 'tip' || lowerCmd === 'hint') {
+      // Tip Command
+      const randomTip = t.UI.tips[Math.floor(Math.random() * t.UI.tips.length)];
+      addToHistory(randomTip, LineType.SYSTEM);
     } else {
       // Unknown Command
       soundManager.playBeep();
@@ -170,7 +174,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
     }
     if (JSON.stringify(konamiRef.current) === JSON.stringify(konamiCode)) {
       soundManager.playUnlock();
-      addToHistory("CHEAT CODE ACTIVATED: GOD MODE ENABLED (Just kidding, but nice memory!)", LineType.SYSTEM);
+      addToHistory(<LocalizedText selector={t => t.UI.konami_message} />, LineType.SYSTEM);
       konamiRef.current = [];
     }
 

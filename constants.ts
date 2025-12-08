@@ -51,6 +51,10 @@ interface Translation {
     ai_mode_welcome: string;
     ai_mode_exit: string;
     command_not_found: string;
+    sudo_message: string;
+    matrix_message: string;
+    konami_message: string;
+    tips: string[];
     status: {
         cpu: string;
         mem: string;
@@ -212,6 +216,15 @@ COMMUNICATION CHANNELS OPEN:
       ai_mode_welcome: "ENTERING AI INTERACTIVE MODE. Type 'exit' to return.",
       ai_mode_exit: "EXITING AI MODE.",
       command_not_found: "Command not found: ",
+      sudo_message: "Permission denied: You are not the owner of this portfolio.",
+      matrix_message: "Toggling Matrix visual interface...",
+      konami_message: "CHEAT CODE ACTIVATED: GOD MODE ENABLED (Just kidding, but nice memory!)",
+      tips: [
+        "Tip: Try typing 'matrix' to see what happens.",
+        "Tip: There might be a 'sudo' command for admins...",
+        "Tip: Do you remember the Konami Code?",
+        "Tip: 'ai' command lets you talk to the neural network."
+      ],
       status: {
         cpu: "CPU",
         mem: "MEM",
@@ -371,6 +384,15 @@ TIP: 하단의 추천 버튼을 클릭하거나 명령어를 직접 입력하세
       ai_mode_welcome: "AI 대화 모드로 진입합니다. 'exit'을 입력하여 종료하세요.",
       ai_mode_exit: "AI 모드를 종료합니다.",
       command_not_found: "명령어를 찾을 수 없습니다: ",
+      sudo_message: "권한 거부: 당신은 이 포트폴리오의 소유자가 아닙니다.",
+      matrix_message: "매트릭스 비주얼 인터페이스를 전환합니다...",
+      konami_message: "치트 코드 활성화: 신 모드 켜짐 (농담입니다. 기억력이 좋으시네요!)",
+      tips: [
+        "팁: 'matrix'를 입력해보세요.",
+        "팁: 관리자를 위한 'sudo' 명령어가 있을지도 모릅니다...",
+        "팁: 코나미 커맨드를 기억하시나요?",
+        "팁: 'ai' 명령어로 신경망과 대화할 수 있습니다."
+      ],
       status: {
         cpu: "CPU",
         mem: "메모리",
