@@ -232,7 +232,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
 
       {/* Quick Suggestions */}
       <div className="flex flex-wrap gap-2 mt-4">
-        {[t.UI.commands.help, t.UI.commands.projects, t.UI.commands.about, t.UI.commands.contact].map(cmd => (
+        {[t.UI.commands.help, t.UI.commands.projects, t.UI.commands.about, t.UI.commands.contact, t.UI.commands.tip].map(cmd => (
           <button
             key={cmd}
             onClick={(e) => { e.stopPropagation(); handleCommand(cmd); }}

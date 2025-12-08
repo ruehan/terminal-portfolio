@@ -67,6 +67,7 @@ interface Translation {
         projects: string;
         contact: string;
         clear: string;
+        tip: string;
     };
     modal: {
         features: string;
@@ -138,6 +139,7 @@ about       : About
 projects    : Projects
 contact     : Contact
 clear / cls : Clear terminal
+tip         : Show a random tip
 [query]     : Ask AI Assistant (e.g., "What is your stack?")
 
 TIP: Click suggestions below or type commands directly.
@@ -236,7 +238,8 @@ COMMUNICATION CHANNELS OPEN:
         about: "about",
         projects: "projects",
         contact: "contact",
-        clear: "clear"
+        clear: "clear",
+        tip: "tip"
       },
       modal: {
         features: "KEY FEATURES",
@@ -306,6 +309,7 @@ about       : 소개
 projects    : 프로젝트
 contact     : 연락처
 clear / cls : 터미널 화면 초기화
+tip         : 랜덤 팁 보기
 [질문]      : AI 어시스턴트에게 질문 (예: "주로 쓰는 기술 스택이 뭐야?")
 
 TIP: 하단의 추천 버튼을 클릭하거나 명령어를 직접 입력하세요.
@@ -404,7 +408,8 @@ TIP: 하단의 추천 버튼을 클릭하거나 명령어를 직접 입력하세
         about: "about",
         projects: "projects",
         contact: "contact",
-        clear: "clear"
+        clear: "clear",
+        tip: "tip"
       },
       modal: {
         features: "주요 기능",
