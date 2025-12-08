@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Default (Cyberpunk) */
+  --color-bg: #000000;
+  --color-text: #22c55e; /* green-500 */
+  --color-text-dim: #15803d; /* green-700 */
+  --color-border: #22c55e;
+  --color-highlight: #4ade80; /* green-400 */
+  --color-error: #ef4444; /* red-500 */
+}
+
+[data-theme='retro'] {
+  --color-bg: #1a0f00;
+  --color-text: #f59e0b; /* amber-500 */
+  --color-text-dim: #b45309; /* amber-700 */
+  --color-border: #f59e0b;
+  --color-highlight: #fbbf24; /* amber-400 */
+}
+
+[data-theme='matrix'] {
+  --color-bg: #000500;
+  --color-text: #00ff41; /* matrix green */
+  --color-text-dim: #008f11;
+  --color-border: #00ff41;
+  --color-highlight: #ccffcc;
+}
+
+[data-theme='dracula'] {
+  --color-bg: #282a36;
+  --color-text: #ff79c6; /* pink */
+  --color-text-dim: #bd93f9; /* purple */
+  --color-border: #ff79c6;
+  --color-highlight: #8be9fd; /* cyan */
+}
+
+[data-theme='white'] {
+  --color-bg: #ffffff;
+  --color-text: #171717; /* neutral-900 */
+  --color-text-dim: #525252; /* neutral-600 */
+  --color-border: #171717;
+  --color-highlight: #2563eb; /* blue-600 */
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Courier New', Courier, monospace;
+  overflow: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+@layer utilities {
+  .text-theme-primary {
+    color: var(--color-text);
+  }
+  .text-theme-dim {
+    color: var(--color-text-dim);
+  }
+  .text-theme-highlight {
+    color: var(--color-highlight);
+  }
+  .text-theme-error {
+    color: var(--color-error);
+  }
+  .border-theme {
+    border-color: var(--color-border);
+  }
+  .bg-theme-bg {
+    background-color: var(--color-bg);
+  }
+}

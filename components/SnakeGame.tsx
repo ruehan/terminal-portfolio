@@ -113,17 +113,22 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onClose }) => {
     if (!ctx) return;
 
     // Clear canvas
-    ctx.fillStyle = '#000';
+    const computedStyle = getComputedStyle(document.body);
+    const bgColor = computedStyle.getPropertyValue('--color-bg').trim();
+    const snakeColor = computedStyle.getPropertyValue('--color-text').trim();
+    const foodColor = computedStyle.getPropertyValue('--color-error').trim();
+
+    ctx.fillStyle = bgColor || '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw Snake
-    ctx.fillStyle = '#0F0';
+    ctx.fillStyle = snakeColor || '#0F0';
     snakeRef.current.forEach(segment => {
       ctx.fillRect(segment.x * CELL_SIZE, segment.y * CELL_SIZE, CELL_SIZE - 2, CELL_SIZE - 2);
     });
 
     // Draw Food
-    ctx.fillStyle = '#F00';
+    ctx.fillStyle = foodColor || '#F00';
     ctx.fillRect(foodRef.current.x * CELL_SIZE, foodRef.current.y * CELL_SIZE, CELL_SIZE - 2, CELL_SIZE - 2);
   };
 
@@ -166,8 +171,8 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onClose }) => {
 
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
-      <div className="relative p-4 border border-green-500 rounded-lg bg-black shadow-[0_0_50px_rgba(0,255,0,0.2)]">
-        <div className="flex justify-between mb-2 font-mono text-green-500">
+      <div className="relative p-4 border border-theme rounded-lg bg-black shadow-[0_0_50px_rgba(0,255,0,0.2)]">
+        <div className="flex justify-between mb-2 font-mono text-theme-primary">
           <span>SCORE: {score}</span>
           <span>HIGH SCORE: {highScore}</span>
         </div>
@@ -176,17 +181,17 @@ export const SnakeGame: React.FC<SnakeGameProps> = ({ onClose }) => {
           ref={canvasRef} 
           width={GRID_WIDTH * CELL_SIZE} 
           height={GRID_HEIGHT * CELL_SIZE}
-          className="border border-green-900 bg-black"
+          className="border border-theme-dim bg-theme-bg"
         />
 
-        <div className="mt-2 text-center font-mono text-xs text-green-700">
+        <div className="mt-2 text-center font-mono text-xs text-theme-dim">
           [ARROWS] MOVE • [ESC] EXIT
         </div>
 
         {gameOver && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
-            <h2 className="text-3xl font-bold text-red-500 mb-4 animate-pulse">GAME OVER</h2>
-            <p className="text-green-500 mb-4">FINAL SCORE: {score}</p>
+            <h2 className="text-3xl font-bold text-theme-error mb-4 animate-pulse">GAME OVER</h2>
+            <p className="text-theme-primary mb-4">FINAL SCORE: {score}</p>
             <div className="space-y-2 text-center">
               <p className="text-sm text-zinc-400">PRESS [ENTER] TO RESTART</p>
               <p className="text-sm text-zinc-400">PRESS [ESC] TO EXIT</p>

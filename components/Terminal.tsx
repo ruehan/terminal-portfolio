@@ -7,6 +7,8 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 import { soundManager } from '../utils/sound';
 
+import { useTheme, Theme } from '../contexts/ThemeContext';
+
 interface TerminalProps {
   onNavigate: (target: CameraTarget) => void;
   onSelectProject: (id: string) => void;
@@ -17,6 +19,7 @@ interface TerminalProps {
 
 export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject, onOpenProfile, onToggleMatrix, onToggleGame }) => {
   const { language } = useLanguage();
+  const { theme, setTheme, availableThemes } = useTheme();
   const t = TRANSLATIONS[language];
   const [history, setHistory] = useState<TerminalLine[]>([]);
   const [input, setInput] = useState('');
@@ -153,6 +156,33 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
       // Tip Command
       const tipIndex = Math.floor(Math.random() * t.UI.tips.length);
       addToHistory(<LocalizedText selector={t => t.UI.tips[tipIndex]} />, LineType.SYSTEM);
+    } else if (lowerCmd.startsWith('theme')) {
+      // Theme Command
+      const args = lowerCmd.split(' ');
+      if (args.length === 1 || args[1] === 'list') {
+        addToHistory(
+          <div>
+            AVAILABLE THEMES:
+            <br />
+            {availableThemes.map(th => (
+              <div key={th} className={th === theme ? 'text-green-400 font-bold' : ''}>
+                {th === theme ? '* ' : '  '}{th}
+              </div>
+            ))}
+            <br />
+            Usage: theme [name]
+          </div>,
+          LineType.SYSTEM
+        );
+      } else {
+        const targetTheme = args[1] as Theme;
+        if (availableThemes.includes(targetTheme)) {
+          setTheme(targetTheme);
+          addToHistory(`Theme changed to: ${targetTheme}`, LineType.SYSTEM);
+        } else {
+          addToHistory(`Theme '${targetTheme}' not found. Type 'theme list' for options.`, LineType.ERROR);
+        }
+      }
     } else {
       // Unknown Command
       soundManager.playBeep();
@@ -196,21 +226,42 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
       {/* Output Area */}
       <div className="flex-1 overflow-y-auto mb-4 space-y-2 pr-2">
         {history.map((line) => (
-          <div key={line.id} className={`${line.type === LineType.AI ? 'text-zinc-200' : line.type === LineType.ERROR ? 'text-red-500' : 'text-zinc-400'}`}>
-            <div className="flex flex-row items-start">
-               {line.type === LineType.INPUT && <span className={`mr-2 opacity-90 shrink-0 ${isAiMode ? 'text-cyan-400' : 'text-white'}`}>{isAiMode ? t.UI.ai_prefix : t.UI.user_prefix}</span>}
-               {line.type === LineType.AI && <span className="mr-2 text-zinc-300 opacity-90 shrink-0">{t.UI.ai_prefix}</span>}
-               {line.type === LineType.SYSTEM && <span className="mr-2 text-zinc-500 opacity-70 shrink-0">{t.UI.system_name}</span>}
-               
-               <div className="w-full break-words leading-relaxed font-inherit">
-                 {typeof line.content === 'string' ? (
-                   <pre className="whitespace-pre-wrap font-inherit max-w-full">{line.content}</pre>
-                 ) : (
-                   line.content
-                 )}
-               </div>
+          line.type === LineType.INPUT ? (
+          <div key={line.id} className="flex flex-row items-start">
+            <span className={`mr-2 opacity-90 shrink-0 ${isAiMode ? 'text-theme-highlight' : 'text-theme-primary'}`}>{isAiMode ? t.UI.ai_prefix : t.UI.user_prefix}</span>
+            <div className="w-full break-words leading-relaxed font-inherit text-theme-primary">
+              {typeof line.content === 'string' ? (
+                <pre className="whitespace-pre-wrap font-inherit max-w-full">{line.content}</pre>
+              ) : (
+                line.content
+              )}
             </div>
           </div>
+        ) : line.type === LineType.OUTPUT ? (
+          <div key={line.id} className="text-theme-dim whitespace-pre-wrap mb-2 leading-relaxed">
+            {line.content}
+          </div>
+        ) : line.type === LineType.SYSTEM ? (
+          <div key={line.id} className="text-theme-highlight font-mono text-sm mb-2 opacity-80">
+            {line.content}
+          </div>
+        ) : line.type === LineType.ERROR ? (
+          <div key={line.id} className="text-theme-error font-bold mb-2">
+            {line.content}
+          </div>
+        ) : line.type === LineType.AI ? (
+           <div key={line.id} className="flex mb-4 animate-fade-in">
+            <div className="flex-shrink-0 mr-3 mt-1 text-theme-highlight">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="flex-1 bg-zinc-900/50 p-3 rounded border border-theme text-theme-primary leading-relaxed whitespace-pre-wrap">
+               <strong className="block text-xs text-theme-dim mb-1 border-b border-zinc-700 pb-1">{t.UI.ai_prefix}</strong>
+               {line.content}
+            </div>
+          </div>
+        ) : null
         ))}
         {isProcessing && (
            <div className="animate-pulse text-zinc-500 opacity-50">{t.UI.processing}</div>
@@ -219,31 +270,33 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
       </div>
 
       {/* Input Area */}
-      <div className={`flex items-center border-t pt-4 bg-black/40 backdrop-blur-sm transition-colors duration-300 ${isAiMode ? 'border-cyan-900/50' : 'border-zinc-800'}`}>
-        <span className={`mr-2 shrink-0 transition-colors duration-300 ${isAiMode ? 'text-cyan-400' : 'text-white'}`}>{isAiMode ? t.UI.ai_prefix : t.UI.user_prefix}</span>
+      <div className="flex items-center text-theme-primary pt-2 border-t border-zinc-800/50 mt-2">
+        <span className="font-bold mr-2 animate-pulse">
+          {isAiMode ? t.UI.ai_prefix : t.UI.user_prefix}
+        </span>
         <input
           ref={inputRef}
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          autoFocus
-          className={`flex-1 bg-transparent border-none outline-none placeholder-zinc-700 transition-colors duration-300 ${isAiMode ? 'text-cyan-100' : 'text-zinc-300'}`}
+          className="flex-1 bg-transparent outline-none border-none text-theme-primary placeholder-zinc-600 font-inherit"
           placeholder={isAiMode ? t.UI.ai_input_placeholder : t.UI.input_placeholder}
+          autoFocus
+          spellCheck={false}
           autoComplete="off"
-          disabled={isProcessing}
         />
       </div>
 
       {/* Quick Suggestions */}
       <div className="flex flex-wrap gap-2 mt-4">
-        {[t.UI.commands.help, t.UI.commands.projects, t.UI.commands.about, t.UI.commands.contact, t.UI.commands.tip, t.UI.commands.game].map(cmd => (
+        {[t.UI.commands.help, t.UI.commands.projects, t.UI.commands.about, t.UI.commands.contact, t.UI.commands.tip, t.UI.commands.game, t.UI.commands.theme].map(cmd => (
           <button
             key={cmd}
             onClick={(e) => { e.stopPropagation(); handleCommand(cmd); }}
-            className="px-3 py-1 border border-zinc-700 text-zinc-500 text-xs hover:bg-zinc-800 hover:text-white transition-colors uppercase tracking-wider"
+            className="px-3 py-1 text-xs border border-theme text-theme-dim hover:bg-theme-bg hover:text-theme-highlight transition-colors rounded opacity-70 hover:opacity-100"
           >
-            [{cmd}]
+            {cmd}
           </button>
         ))}
       </div>

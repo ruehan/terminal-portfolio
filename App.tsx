@@ -59,10 +59,10 @@ function App() {
       {/* Layer 2: UI Overlay */}
       <div className="absolute inset-0 z-10 flex items-center justify-center p-4">
         {/* Glassmorphism Container */}
-        <div className="relative w-full max-w-5xl h-[70vh] md:h-[80vh] bg-black/80 backdrop-blur-md rounded-lg border border-zinc-800 shadow-[0_0_60px_rgba(255,255,255,0.05)] flex flex-col overflow-hidden transition-all duration-500 ease-in-out">
+        <div className="relative w-full max-w-5xl h-[70vh] md:h-[80vh] bg-black/80 backdrop-blur-md rounded-lg border border-theme shadow-[0_0_60px_rgba(255,255,255,0.05)] flex flex-col overflow-hidden transition-all duration-500 ease-in-out">
           
           {/* Window Header */}
-          <div className="h-8 bg-zinc-900 border-b border-zinc-800 flex items-center px-4 justify-between shrink-0">
+          <div className="h-8 bg-zinc-900 border-b border-theme flex items-center px-4 justify-between shrink-0">
             <div className="flex items-center space-x-2">
                <div className="text-xs text-zinc-500 tracking-widest">
                 Z-SHELL :: ROOT ACCESS :: SECURE

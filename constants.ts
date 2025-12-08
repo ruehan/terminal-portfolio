@@ -69,6 +69,7 @@ interface Translation {
         clear: string;
         tip: string;
         game: string;
+        theme: string;
     };
     modal: {
         features: string;
@@ -142,6 +143,7 @@ contact     : Contact
 clear / cls : Clear terminal
 tip         : Show a random tip
 game        : Play Snake Game
+theme       : Change color theme (e.g., "theme retro")
 ai          : Ask AI Assistant (e.g., "ai What is your stack?")
 
 TIP: Click suggestions below or type commands directly.
@@ -242,7 +244,8 @@ COMMUNICATION CHANNELS OPEN:
         contact: "contact",
         clear: "clear",
         tip: "tip",
-        game: "game"
+        game: "game",
+        theme: "theme"
       },
       modal: {
         features: "KEY FEATURES",
@@ -314,6 +317,7 @@ contact     : 연락처
 clear / cls : 터미널 화면 초기화
 tip         : 랜덤 팁 보기
 game        : 스네이크 게임 실행
+theme       : 테마 변경 (예: "theme retro")
 ai          : AI 어시스턴트에게 질문 (예: "ai 주로 쓰는 기술 스택이 뭐야?")
 
 TIP: 하단의 추천 버튼을 클릭하거나 명령어를 직접 입력하세요.
@@ -414,7 +418,8 @@ TIP: 하단의 추천 버튼을 클릭하거나 명령어를 직접 입력하세
         contact: "contact",
         clear: "clear",
         tip: "tip",
-        game: "game"
+        game: "game",
+        theme: "theme"
       },
       modal: {
         features: "주요 기능",
