@@ -146,8 +146,8 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
       addToHistory(<LocalizedText selector={t => t.UI.matrix_message} />, LineType.SYSTEM);
     } else if (lowerCmd === 'tip' || lowerCmd === 'hint') {
       // Tip Command
-      const randomTip = t.UI.tips[Math.floor(Math.random() * t.UI.tips.length)];
-      addToHistory(randomTip, LineType.SYSTEM);
+      const tipIndex = Math.floor(Math.random() * t.UI.tips.length);
+      addToHistory(<LocalizedText selector={t => t.UI.tips[tipIndex]} />, LineType.SYSTEM);
     } else {
       // Unknown Command
       soundManager.playBeep();
