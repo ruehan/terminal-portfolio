@@ -67,6 +67,16 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+@media (max-width: 640px) {
+  body {
+    font-size: 14px;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+}
+
 @layer utilities {
   .text-theme-primary {
     color: var(--color-text);

@@ -184,7 +184,7 @@ export const ThemeSelector: React.FC = () => {
           <button
             key={th}
             onClick={() => setTheme(th)}
-            className={`text-left px-3 py-1 border rounded transition-all ${
+            className={`text-left px-3 py-2 md:py-1 border rounded transition-all text-sm ${
               th === theme 
                 ? 'border-theme text-theme-highlight bg-theme-bg/50 font-bold' 
                 : 'border-zinc-700 text-zinc-500 hover:border-theme hover:text-theme-primary'
@@ -233,7 +233,7 @@ export const MusicControlWidget: React.FC = () => {
       <div className="flex gap-4">
         <button
           onClick={handlePlay}
-          className={`px-4 py-1 border rounded transition-all ${
+          className={`px-4 py-2 md:py-1 border rounded transition-all text-sm ${
             isPlaying 
               ? 'border-theme text-theme-highlight bg-theme-bg/50 font-bold' 
               : 'border-zinc-700 text-zinc-500 hover:border-theme hover:text-theme-primary'
@@ -243,7 +243,7 @@ export const MusicControlWidget: React.FC = () => {
         </button>
         <button
           onClick={handleStop}
-          className={`px-4 py-1 border rounded transition-all ${
+          className={`px-4 py-2 md:py-1 border rounded transition-all text-sm ${
             !isPlaying 
               ? 'border-zinc-700 text-zinc-500' 
               : 'border-zinc-700 text-zinc-500 hover:border-red-500 hover:text-red-500'

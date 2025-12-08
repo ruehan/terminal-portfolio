@@ -30,8 +30,18 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
   const konamiRef = useRef<string[]>([]);
 
   // Auto-scroll to bottom
+  const scrollToBottom = () => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+      // Mobile fix: Ensure input is visible when keyboard opens
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: 'auto' });
+      }, 100);
+    }
+  };
+
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    scrollToBottom();
   }, [history]);
 
   // Keep focus on input
@@ -314,12 +324,12 @@ export const Terminal: React.FC<TerminalProps> = ({ onNavigate, onSelectProject,
       </div>
 
       {/* Quick Suggestions */}
-      <div className="flex flex-wrap gap-2 mt-4">
+      <div className="flex flex-wrap gap-2 mt-4 pb-2">
         {[t.UI.commands.help, t.UI.commands.projects, t.UI.commands.about, t.UI.commands.contact, t.UI.commands.tip, t.UI.commands.game, t.UI.commands.music, t.UI.commands.theme].map(cmd => (
           <button
             key={cmd}
             onClick={(e) => { e.stopPropagation(); handleCommand(cmd); }}
-            className="px-3 py-1 text-xs border border-theme text-theme-dim hover:bg-theme-bg hover:text-theme-highlight transition-colors rounded opacity-70 hover:opacity-100"
+            className="px-3 py-2 md:py-1 border border-zinc-700 rounded text-xs md:text-sm text-zinc-500 hover:border-theme hover:text-theme-primary transition-colors active:bg-theme-bg/20"
           >
             {cmd}
           </button>
